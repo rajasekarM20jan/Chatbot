@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     EditText edittext;
     ImageButton sendbutton;
     JSONObject jobj;
+    public static String userName;
     public static Context context;
     ArrayList<chatBotModel> myMessagesArraylist;
     chatAdapter chatAdapter;
@@ -59,6 +60,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myPlayer=MediaPlayer.create(context,R.raw.audio);
         chatbotDb.deleteTable();
         notFirstTime=false;
+
+        Database mydb = new Database(MainActivity.this);
+
+                if(mydb.getUserdetails().getCount() != 0) {
+                    Cursor curseattachtoken = mydb.getUserdetails();
+                    curseattachtoken.moveToFirst();
+                    userName = curseattachtoken.getString(0);
+                }
+
         sensorManager=(SensorManager) getSystemService(Service.SENSOR_SERVICE);
         linearAccelerometer=sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
@@ -110,7 +120,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         chatbotDb.insertMessage(message_code,message);
         edittext.setText("");
         edittext.clearFocus();
-        responseMessage(message);
+        getMessages();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                responseMessage(message);
+            }
+        },3000);
+
     }
 
 
@@ -119,22 +136,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         try {
             if (message.contains("Hi") || message.contains("hi") || message.contains("Hey") || message.contains("Hello") || message.contains("hello") || message.contains("hey")||message.contains("oi")||message.contains("Oii")||message.contains("Oi")||message.contains("oii")||message.contains("oie")||message.contains("Oie")) {
                 String response = jobj.getString("Hi");
-                chatbotDb.insertMessage(2,response+"\t"+new String(Character.toChars(0x2764)));
+                chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x2764)));
             } else if (message.contains("enna panra")||message.contains("ena panra")||message.contains("enna pandra")||(message.contains("Enna panra"))||message.contains("Ena panra")||message.contains("Ena pandra")) {
                 String response = jobj.getString("enna_panra");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("saptiya")||message.contains("saaptiya")||message.contains("Saaptiya")||message.contains("Saptiya")){
                 String response = jobj.getString("saptiya");
-                chatbotDb.insertMessage(2,response);
+                chatbotDb.insertMessage(2,response+userName);
             } else if(message.contains("naanum")||message.contains("nanum")||message.contains("Nanum")||message.contains("Naanum")){
                 String response = jobj.getString("naanum_summa_dhan_iruken");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("bye")||message.contains("Bye")){
                 String response = jobj.getString("ok_bye");
-                chatbotDb.insertMessage(2,response);
+                chatbotDb.insertMessage(2,response+userName);
             }else if(message.contains("I luv u")||message.contains("love u")|| message.contains("love you")||message.contains("i luv u")){
                 String response = jobj.getString("ilu");
-                chatbotDb.insertMessage(2,response+"\t"+new String(Character.toChars(0x1F60D)));
+                chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x1F60D)));
             }else if(message.contains("aprm")||message.contains("apro")||message.contains("then")){
                 String response = jobj.getString("apro");
                 chatbotDb.insertMessage(2,response);
@@ -184,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void sendShakeData() {
         try {
             String response = jobj.getString("shake_detection");
-            chatbotDb.insertMessage(2, response);
+            chatbotDb.insertMessage(2,userName+ response);
             getMessages();
             if(myPlayer.isPlaying()){
                 myPlayer.stop();

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class Database extends SQLiteOpenHelper {
     public static String chatbot="chatbot";
+    public static String userName="userName";
+    public static String userName2="user_name";
     public static String messageCode="messageCode";
     public static String myMessage="message";
     public static String[] data = {"messageCode", "message"};
@@ -25,6 +27,8 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table "+chatbot+ "(messageCode VARCHAR ,message VARCHAR)");
+
+        db.execSQL("create table "+userName+ "(user_name VARCHAR)");
     }
 
     @Override
@@ -39,6 +43,20 @@ public class Database extends SQLiteOpenHelper {
         contentValues.put(messageCode,message_code);
         contentValues.put(myMessage,message);
         db.insert(chatbot,null,contentValues);
+    }
+
+    public void insertName(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(userName2,name);
+        db.insert(userName,null,contentValues);
+    }
+
+    public Cursor getUserdetails()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("Select * from "+ userName,null);
+        return res;
     }
 
     public void deleteTable(){
