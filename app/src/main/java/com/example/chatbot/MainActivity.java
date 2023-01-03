@@ -19,8 +19,11 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     ListView myListview;
     EditText edittext;
     ImageButton sendbutton;
+    ImageView msgView;
     JSONObject jobj;
     public static String userName;
     public static Context context;
@@ -57,9 +61,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         edittext=findViewById(R.id.edittext);
         myListview=findViewById(R.id.mylistview);
         context=this;
+        msgView=findViewById(R.id.msgView);
         myPlayer=MediaPlayer.create(context,R.raw.audio);
         chatbotDb.deleteTable();
         notFirstTime=false;
+
+        Glide.with(this).asGif().load(R.raw.msg).into(msgView);
 
         Database mydb = new Database(MainActivity.this);
 
