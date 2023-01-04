@@ -16,7 +16,9 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     EditText edittext;
     ImageButton sendbutton;
     JSONObject jobj;
+    String response;
     public static String userName;
     public static Context context;
     ArrayList<chatBotModel> myMessagesArraylist;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     MediaPlayer myPlayer;
     Sensor linearAccelerometer;
     double previousAcceleration;
+    TextToSpeech textToSpeech;
 
 
 
@@ -63,6 +68,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myPlayer=MediaPlayer.create(context,R.raw.audio);
         chatbotDb.deleteTable();
         notFirstTime=false;
+
+        textToSpeech=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if(i!=TextToSpeech.ERROR){
+                    textToSpeech.setLanguage(Locale.JAPANESE);
+                }
+            }
+        });
 
 
         Database mydb = new Database(MainActivity.this);
@@ -116,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myListview.setSelection(chatAdapter.getCount() - 1);
         // Smooth scroll to the bottom
         myListview.smoothScrollToPosition(chatAdapter.getCount() - 1);
+        textToSpeech.speak(response,TextToSpeech.QUEUE_FLUSH,null);
     }
 
     private void sendMessage() {
@@ -139,40 +154,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void responseMessage(String message) {
         try {
             if (message.contains("Hi") || message.contains("hi") || message.contains("Hey") || message.contains("Hello") || message.contains("hello") || message.contains("hey")||message.contains("oi")||message.contains("Oii")||message.contains("Oi")||message.contains("oii")||message.contains("oie")||message.contains("Oie")) {
-                String response = jobj.getString("Hi");
+                response = jobj.getString("Hi");
                 chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x2764)));
             } else if (message.contains("enna panra")||message.contains("ena panra")||message.contains("enna pandra")||(message.contains("Enna panra"))||message.contains("Ena panra")||message.contains("Ena pandra")) {
-                String response = jobj.getString("enna_panra");
+                response = jobj.getString("enna_panra");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("saptiya")||message.contains("saaptiya")||message.contains("Saaptiya")||message.contains("Saptiya")){
-                String response = jobj.getString("saptiya");
+                response = jobj.getString("saptiya");
                 chatbotDb.insertMessage(2,response+userName);
             } else if(message.contains("naanum")||message.contains("nanum")||message.contains("Nanum")||message.contains("Naanum")){
-                String response = jobj.getString("naanum_summa_dhan_iruken");
+                response = jobj.getString("naanum_summa_dhan_iruken");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("bye")||message.contains("Bye")){
-                String response = jobj.getString("ok_bye");
+                response = jobj.getString("ok_bye");
                 chatbotDb.insertMessage(2,response+userName);
             }else if(message.contains("I luv u")||message.contains("love u")|| message.contains("love you")||message.contains("i luv u")){
-                String response = jobj.getString("ilu");
+                response = jobj.getString("ilu");
                 chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x1F60D)));
             }else if(message.contains("aprm")||message.contains("apro")||message.contains("then")){
-                String response = jobj.getString("apro");
+                response = jobj.getString("apro");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("epdi iruka")||message.contains("Epdi irukinga")||message.contains("Epdi iruka")){
-                String response = jobj.getString("epdi_iruka");
+                response = jobj.getString("epdi_iruka");
                 chatbotDb.insertMessage(2,response);
             }else if(message.contains("iruken")||message.contains("I am good")||message.contains("nalla iruken")||message.contains("Nalla iruken")){
-                String response = jobj.getString("nalla_iruken");
+                response = jobj.getString("nalla_iruken");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("sapten")||message.contains("Sapten")||message.contains("Saapten")||message.contains("saapten")){
-                String response = jobj.getString("sapten");
+                response = jobj.getString("sapten");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("idli")||message.contains("Idli")||message.contains("dosa")||message.contains("Dosa")||message.contains("pongal")||message.contains("Pongal")||message.contains("poori")||message.contains("Poori")||message.contains("rice")){
-                String response = jobj.getString("sapten");
+                response = jobj.getString("sapten");
                 chatbotDb.insertMessage(2,response);
             } else{
-                String response = jobj.getString("mis_spelled");
+                response = jobj.getString("mis_spelled");
                 chatbotDb.insertMessage(2,response);
             }
             getMessages();
