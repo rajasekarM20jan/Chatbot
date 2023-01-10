@@ -14,6 +14,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -33,6 +34,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     EditText edittext;
     ImageButton sendbutton;
     JSONObject jobj;
-    String response;
+    public static String response;
     public static String userName;
     public static Context context;
     ArrayList<chatBotModel> myMessagesArraylist;
@@ -49,11 +51,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SensorManager sensorManager;
     Boolean notFirstTime;
     MediaPlayer myPlayer;
+    String[] myDictionary;
+    int a;
     Sensor linearAccelerometer;
     double previousAcceleration;
-    TextToSpeech textToSpeech;
+    public static TextToSpeech textToSpeech;
 
 
+    public int getRandomNumberUsingInts(int min, int max) {
+        Random random = new Random();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return random.ints(min, max)
+                    .findFirst()
+                    .getAsInt();
+        }
+        return 0;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myPlayer=MediaPlayer.create(context,R.raw.audio);
         chatbotDb.deleteTable();
         notFirstTime=false;
+
+        myDictionary= new String[]{"Otthhha", "baaadu", "ommaaale", "pundaa-mavan", "Kena-koodhi","Kena-pundaa","David pullaai","Pulutthhi","pachai-pudungi"};
+
+
 
         textToSpeech=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -130,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myListview.setSelection(chatAdapter.getCount() - 1);
         // Smooth scroll to the bottom
         myListview.smoothScrollToPosition(chatAdapter.getCount() - 1);
-        textToSpeech.speak(response,TextToSpeech.QUEUE_FLUSH,null);
+
     }
 
     private void sendMessage() {
@@ -154,23 +171,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void responseMessage(String message) {
         try {
             if (message.contains("Hi") || message.contains("hi") || message.contains("Hey") || message.contains("Hello") || message.contains("hello") || message.contains("hey")||message.contains("oi")||message.contains("Oii")||message.contains("Oi")||message.contains("oii")||message.contains("oie")||message.contains("Oie")) {
-                response = jobj.getString("Hi");
-                chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x2764)));
+                response = jobj.getString("Hi")+userName;
+                chatbotDb.insertMessage(2,response+"\t"+new String(Character.toChars(0x2764)));
             } else if (message.contains("enna panra")||message.contains("ena panra")||message.contains("enna pandra")||(message.contains("Enna panra"))||message.contains("Ena panra")||message.contains("Ena pandra")) {
                 response = jobj.getString("enna_panra");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("saptiya")||message.contains("saaptiya")||message.contains("Saaptiya")||message.contains("Saptiya")){
-                response = jobj.getString("saptiya");
-                chatbotDb.insertMessage(2,response+userName);
+                response = jobj.getString("saptiya")+userName;
+                chatbotDb.insertMessage(2,response);
             } else if(message.contains("naanum")||message.contains("nanum")||message.contains("Nanum")||message.contains("Naanum")){
                 response = jobj.getString("naanum_summa_dhan_iruken");
                 chatbotDb.insertMessage(2,response);
             } else if(message.contains("bye")||message.contains("Bye")){
-                response = jobj.getString("ok_bye");
-                chatbotDb.insertMessage(2,response+userName);
+                response = jobj.getString("ok_bye")+userName;
+                chatbotDb.insertMessage(2,response);
             }else if(message.contains("I luv u")||message.contains("love u")|| message.contains("love you")||message.contains("i luv u")){
-                response = jobj.getString("ilu");
-                chatbotDb.insertMessage(2,response+userName+"\t"+new String(Character.toChars(0x1F60D)));
+                response = jobj.getString("ilu")+userName;
+                chatbotDb.insertMessage(2,response+"\t"+new String(Character.toChars(0x1F60D)));
             }else if(message.contains("aprm")||message.contains("apro")||message.contains("then")){
                 response = jobj.getString("apro");
                 chatbotDb.insertMessage(2,response);
@@ -183,8 +200,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } else if(message.contains("sapten")||message.contains("Sapten")||message.contains("Saapten")||message.contains("saapten")){
                 response = jobj.getString("sapten");
                 chatbotDb.insertMessage(2,response);
-            } else if(message.contains("idli")||message.contains("Idli")||message.contains("dosa")||message.contains("Dosa")||message.contains("pongal")||message.contains("Pongal")||message.contains("poori")||message.contains("Poori")||message.contains("rice")){
+            } else if(message.contains("idli")||message.contains("Idli")||message.contains("dosa")||message.contains("Dosa")||message.contains("pongal")||message.contains("Pongal")||message.contains("poori")||message.contains("Poori")||message.contains("rice")) {
                 response = jobj.getString("sapten");
+                chatbotDb.insertMessage(2, response);
+            } else if(message.contains("ketta")||message.contains("bad")||message.contains("Bad word")||message.contains("bad word")||message.contains("Bad")||message.contains("Ketta")||message.contains("keta")||message.contains("Keta")){
+                a=getRandomNumberUsingInts(0,myDictionary.length-1);
+                System.out.println(myDictionary[a]);
+                response = myDictionary[a];
                 chatbotDb.insertMessage(2,response);
             } else{
                 response = jobj.getString("mis_spelled");
@@ -219,8 +241,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void sendShakeData() {
         try {
-            String response = jobj.getString("shake_detection");
-            chatbotDb.insertMessage(2,userName+ response);
+            response = userName+jobj.getString("shake_detection");
+            chatbotDb.insertMessage(2, response);
             getMessages();
             if(myPlayer.isPlaying()){
                 myPlayer.stop();

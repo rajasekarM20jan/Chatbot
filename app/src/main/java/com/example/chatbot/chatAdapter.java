@@ -1,6 +1,9 @@
 package com.example.chatbot;
 
+import static com.example.chatbot.MainActivity.textToSpeech;
+
 import android.content.Context;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,11 +59,14 @@ public class chatAdapter extends ArrayAdapter<chatBotModel> {
             viewHolder.sendLayout.setVisibility(View.GONE);
             viewHolder.receiveLayout.setVisibility(View.VISIBLE);
             viewHolder.textviewreceivedmsg.setText(item.getMessage());
+            textToSpeech.speak(MainActivity.response, TextToSpeech.QUEUE_FLUSH,null);
+            MainActivity.response=null;
         }
         else{
             viewHolder.sendLayout.setVisibility(View.GONE);
             viewHolder.receiveLayout.setVisibility(View.GONE);
         }
+
 
         return view;
     }
